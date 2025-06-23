@@ -65,11 +65,6 @@ const sessionOptions = {
     }
 }
 
-// app.get("/", (req, res) => {
-//     res.send("Hi, I'm Root");
-// });
-
-
 app.use(session(sessionOptions));
 app.use(flash());
 
@@ -87,15 +82,6 @@ app.use((req, res, next) => {
     next();
 });
 
-// app.get("/demoUser", async (req, res) => {
-//     let fakeUser = new User({
-//         email : "student@gmail.com",
-//         username : "student"
-//     });
-//     let registerdUser = await User.register(fakeUser, "helloworls]d");
-//     res.send(registerdUser);
-// })
-
 app.use("/listings", listingRouter);
 app.use("/listings/:id/reviews", reviewRouter);
 app.use("/", userRouter);
@@ -109,6 +95,8 @@ app.use((err, req, res, next) => {
     res.status(statusCode).render("listings/error.ejs", {err});
 });
 
-app.listen(8080, () => {
-    console.log("Server is listening to port 8080");
+const PORT = process.env.PORT || 8080;
+
+app.listen(PORT, () => {
+    console.log(`Server is listening to port ${PORT}`);
 });
