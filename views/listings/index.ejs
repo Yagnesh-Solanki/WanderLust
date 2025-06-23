@@ -1,0 +1,209 @@
+<% layout("/layouts/boilerplate") %>
+
+    <style>
+        #filters {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            flex-wrap: nowrap !important;
+            white-space: nowrap;
+            margin-left: 0.5rem;
+        }
+
+        #scrollContainer {
+            overflow-x: auto;
+            overflow-y: hidden;
+            scroll-behavior: smooth;
+            margin: 0 2rem;
+        }
+        
+        .filter {
+            text-align: center;
+            margin-right: 2rem;
+            margin-top: 2rem;
+            opacity: 0.7;
+        }
+
+        .filter:hover {
+            opacity: 1;
+            cursor: pointer;
+        }
+
+        .filter p {
+            font-size: 0.9rem;
+        }
+
+        .tax-info {
+            display: none;
+        }
+
+        .tax-toggle {
+            border: 1px solid black;
+            border-radius: 1rem;
+            height: 3.25rem;
+            padding: 1rem;
+            margin-left: 2rem;
+            display: flex;
+            align-items: center;
+        }
+
+        #scrollContainer::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        #scrollContainer::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 10px;
+        }
+
+        #scrollLeft,
+        #scrollRight {
+            background: white;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            /* display: none; hidden by default, JS controls visibility */
+        }
+    </style>
+
+    <div class="d-flex align-items-center justify-content-between position-relative">
+        <div class="position-relative" style="max-width: 75%; flex-shrink: 1;">
+            <button id="scrollLeft"
+                class="btn btn-light position-absolute start-0 top-50 translate-middle-y z-3 d-flex align-items-center justify-content-center p-0">&#10094;</button>
+            <div id="scrollContainer" class="overflow-hidden">
+                <div id="filters">
+                    <div class="filter">
+                        <div><i class="fa-solid fa-fire"></i></div>
+                        <p>Trending</p>
+                    </div>
+
+                    <div class="filter">
+                        <div><i class="fa-solid fa-bed"></i></div>
+                        <p>Rooms</p>
+                    </div>
+
+                    <div class="filter">
+                        <div><i class="fa-solid fa-mountain-city"></i></div>
+                        <p>Iconic Cities</p>
+                    </div>
+
+                    <div class="filter">
+                        <div><i class="fa-solid fa-mountain"></i></div>
+                        <p>Mountains</p>
+                    </div>
+
+                    <div class="filter">
+                        <div><i class="fa-brands fa-fort-awesome"></i></div>
+                        <p>Castles</p>
+                    </div>
+
+                    <div class="filter">
+                        <div><i class="fa-solid fa-person-swimming"></i></div>
+                        <p>Amazing pools</p>
+                    </div>
+
+                    <div class="filter">
+                        <div><i class="fa-solid fa-campground"></i></div>
+                        <p>Camping</p>
+                    </div>
+
+                    <div class="filter">
+                        <div><i class="fa-solid fa-cow"></i></div>
+                        <p>Farms</p>
+                    </div>
+
+                    <div class="filter">
+                        <div><i class="fa-regular fa-snowflake"></i></div>
+                        <p>Arctic</p>
+                    </div>
+
+                    <div class="filter">
+                        <div><i class="fa-solid fa-water"></i></div>
+                        <p>Lakefront</p>
+                    </div>
+
+                    <div class="filter">
+                        <div><i class="fa-solid fa-umbrella-beach"></i></div>
+                        <p>Beach</p>
+                    </div>
+
+                    <div class="filter">
+                        <div><i class="fa-solid fa-house"></i></div>
+                        <p>Cabins</p>
+                    </div>
+
+                    <button id="scrollRight"
+                        class="btn btn-light position-absolute end-0 top-50 translate-middle-y z-3 d-flex align-items-center justify-content-center rounded-circle p-0">&#10095;</button>
+
+
+                </div>
+            </div>
+        </div>
+        <div class="tax-toggle">
+            <div class="form-check-reverse form-switch">
+                <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+                <label class="form-check-label" for="flexSwitchCheckDefault">Display total after taxes</label>
+            </div>
+        </div>
+
+    </div>
+
+
+    <div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 mt-3">
+        <% for(let listing of allListings) {%>
+            <a href="/listings/<%= listing._id %>" class="listing-link">
+                <div class="card col listing-card">
+                    <img src="<%= listing.image.url %>" class="card-img-top" alt="listing_image" style="height: 20rem;">
+                    <div class="card-img-overlay"></div>
+                    <div class="card-body">
+                        <p class="card-text">
+                            <b>
+                                <%= listing.title %>
+                            </b> <br>
+                            &#8377;<%= listing.price.toLocaleString("en-IN") %> /night
+                                <i class="tax-info">&nbsp; &nbsp; +18% GST</i>
+                        </p>
+                    </div>
+                </div>
+            </a>
+            <% } %>
+    </div>
+
+
+    <script>
+        let taxSwitch = document.getElementById("flexSwitchCheckDefault");
+        taxSwitch.addEventListener("click", () => {
+            let taxInfo = document.getElementsByClassName("tax-info");
+            for (info of taxInfo) {
+                if (info.style.display != "inline") {
+                    info.style.display = "inline";
+                } else {
+                    info.style.display = "none";
+                }
+            }
+        });
+
+        const scrollContainer = document.getElementById("scrollContainer");
+        const scrollLeft = document.getElementById("scrollLeft");
+        const scrollRight = document.getElementById("scrollRight");
+        const scrollAmount = 200;
+
+        scrollRight.onclick = () => scrollContainer.scrollLeft += scrollAmount;
+        scrollLeft.onclick = () => scrollContainer.scrollLeft -= scrollAmount;
+
+        function updateArrows() {
+            const atStart = scrollContainer.scrollLeft <= 5;
+            const atEnd = scrollContainer.scrollLeft + scrollContainer.clientWidth >= scrollContainer.scrollWidth - 5;
+
+            // Instead of display = 'none', use visibility
+            scrollLeft.style.visibility = atStart ? 'hidden' : 'visible';
+            scrollRight.style.visibility = atEnd ? 'hidden' : 'visible';
+        }
+
+        scrollContainer.addEventListener('scroll', updateArrows);
+        window.addEventListener('load', updateArrows);
+        window.addEventListener('resize', updateArrows);
+
+
+    </script>
